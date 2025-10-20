@@ -1,0 +1,164 @@
+From f6589dc73633149368218cd3c3745cbc631ca306 Mon Sep 17 00:00:00 2001
+From: Adam Krzemianowski <adam.krzemianowski@gmail.com>
+Date: Sun, 19 Oct 2025 14:03:11 +0200
+Subject: [PATCH] fix: Fix issue with missing api groups
+
+---
+ dist/extension.js       |  4 ++-
+ out/registry/pull.js    | 80 +++++++++++++++++++++++++++++++++++++++++
+ out/registry/xsUtils.js |  5 +++
+ 3 files changed, 88 insertions(+), 1 deletion(-)
+
+diff --git a/dist/extension.js b/dist/extension.js
+index cfd6bce..f4bb6b5 100644
+--- a/dist/extension.js
++++ b/dist/extension.js
+@@ -2801,7 +2801,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
+ `}function Ysx(t,r,n,a,s,o,f){var d;if(typeof f=="function"&&(f={callback:f}),(d=f)!==null&&d!==void 0&&d.callback){var _=f,v=_.callback;uM0(t,r,n,a,s,o,CB(CB({},f),{},{callback:function(S){S?v(K_0(S)):v()}}))}else{var m=uM0(t,r,n,a,s,o,f);return m?K_0(m):void 0}}function dM0(t,r,n,a,s,o){return Ysx(t,t,r,n,a,s,o)}function Qsx(t){var r=t.endsWith(`
+ `),n=t.split(`
+ `).map(function(a){return a+`
+-`});return r?n.pop():n.push(n.pop().slice(0,-1)),n}var V_0=class{constructor(){this.contents=new Map}updateContent(r,n){this.contents.set(r,n)}provideTextDocumentContent(r){let n=r.path;return this.contents.get(n)||""}},pe0=new V_0;var aV=Gl(require("vscode"));var EB=Gl(require("vscode"));var Q_0=require("path");var qL=Gl(require("vscode"));function Zsx(){return qL.languages.createDiagnosticCollection("customFunctions")}function W_0(t,r,n,a,s,o){let f=new qL.Range(new qL.Position(n,a),new qL.Position(n,s)),d=new qL.Diagnostic(f,o,qL.DiagnosticSeverity.Error);t.set(r,[d])}var Gz=Zsx();async function AI(t,r){if(r.xanoscript.status==="ok")return r.xanoscript.value;{let n=await Fs0(En.instanceName),a=n.startsWith("localhost")?"http":"https",s=En.workspaceId,o=`${a}://${n}/workspace/${s}-0`;return r.name?`Error retrieving: ${r.name}
++`});return r?n.pop():n.push(n.pop().slice(0,-1)),n}var V_0=class{constructor(){this.contents=new Map}updateContent(r,n){this.contents.set(r,n)}provideTextDocumentContent(r){let n=r.path;return this.contents.get(n)||""}},pe0=new V_0;var aV=Gl(require("vscode"));var EB=Gl(require("vscode"));var Q_0=require("path");var qL=Gl(require("vscode"));function Zsx(){return qL.languages.createDiagnosticCollection("customFunctions")}function W_0(t,r,n,a,s,o){let f=new qL.Range(new qL.Position(n,a),new qL.Position(n,s)),d=new qL.Diagnostic(f,o,qL.DiagnosticSeverity.Error);t.set(r,[d])}var Gz=Zsx();async function AI(t,r){if(!r.xanoscript)return `api_group "${r.name}" {
++}
++`;if(r.xanoscript.status==="ok")return r.xanoscript.value;{let n=await Fs0(En.instanceName),a=n.startsWith("localhost")?"http":"https",s=En.workspaceId,o=`${a}://${n}/workspace/${s}-0`;return r.name?`Error retrieving: ${r.name}
+ ---------------------------
+ ${r.xanoscript.message}
+  ${t} ID: ${r.id}
+diff --git a/out/registry/pull.js b/out/registry/pull.js
+index 4b5a579..55b1f9e 100644
+--- a/out/registry/pull.js
++++ b/out/registry/pull.js
+@@ -501,6 +501,57 @@ function pull() {
+                         console.error(`Unknown file operation ${fileOperation.operation}`);
+                 }
+             }
++            // Clean api_group duplicates before saving registry
++            // This prevents multiple records with the same path but different IDs (especially id=0)
++            const apiGroupsByPath = new Map();
++            const indicesToRemove = [];
++            // First pass: identify duplicates
++            for (let i = 0; i < registry.length; i++) {
++                const record = registry[i];
++                if (record.type === types_1.XanoObjectType.API_GROUP) {
++                    const existing = apiGroupsByPath.get(record.path);
++                    if (existing === undefined) {
++                        // First record for this path
++                        apiGroupsByPath.set(record.path, i);
++                    }
++                    else {
++                        // We have a duplicate
++                        const existingRecord = registry[existing];
++                        // Keep the record with valid ID (not 0)
++                        if (record.id !== 0 && existingRecord.id === 0) {
++                            // Current record is better, mark old one for removal
++                            indicesToRemove.push(existing);
++                            apiGroupsByPath.set(record.path, i);
++                        }
++                        else if (existingRecord.id !== 0 && record.id === 0) {
++                            // Existing is better, mark current for removal
++                            indicesToRemove.push(i);
++                        }
++                        else if (record.id === 0 && existingRecord.id === 0) {
++                            // Both have id=0, keep the first one (mark current for removal)
++                            indicesToRemove.push(i);
++                        }
++                        else if (existingRecord.id !== 0 && record.id !== 0 && existingRecord.id !== record.id) {
++                            // Both have different valid IDs - keep the one with higher ID (more recent)
++                            if (record.id > existingRecord.id) {
++                                indicesToRemove.push(existing);
++                                apiGroupsByPath.set(record.path, i);
++                            } else {
++                                indicesToRemove.push(i);
++                            }
++                        }
++                        // If both have the same valid ID, keep the first one
++                        else if (existingRecord.id === record.id) {
++                            indicesToRemove.push(i);
++                        }
++                    }
++                }
++            }
++            // Second pass: remove duplicates (from end to start to preserve indices)
++            const uniqueIndicesToRemove = [...new Set(indicesToRemove)].sort((a, b) => b - a);
++            for (const index of uniqueIndicesToRemove) {
++                registry.splice(index, 1);
++            }
+             yield (0, registry_1.saveRegistry)(registry);
+             changesTreeDataProvider_1.changesProvider.refresh();
+         }))
+@@ -558,6 +609,14 @@ function newRegistryRecord(fileOperations, obj, objType, path) {
+         const localFilePath = (0, path_1.join)(config_1.ROOT_PATH, record.path);
+         record.sha256 = (0, fsUtils_1.getFileHash)(yield (0, xsUtils_1.getXanoscriptContent)(objType, obj));
+         record.original = Buffer.from(yield (0, xsUtils_1.getXanoscriptContent)(objType, obj)).toString("base64");
++        // Ensure parent directory exists before creating the file
++        const parentDir = (0, path_1.dirname)(localFilePath);
++        fileOperations.push({
++            operation: "create",
++            content: "",
++            fileType: vscode.FileType.Directory,
++            filePath: parentDir,
++        });
+         fileOperations.push({
+             operation: "create",
+             content: yield (0, xsUtils_1.getXanoscriptContent)(objType, obj),
+@@ -597,6 +656,14 @@ function updateExistingRegistryRecord(fileOperations, record, script) {
+         if (record.status === types_1.XanoStatus.UNCHANGED) {
+             record.sha256 = (0, fsUtils_1.getFileHash)(script);
+             record.original = Buffer.from(script).toString("base64");
++            // Ensure parent directory exists before updating the file
++            const parentDir = (0, path_1.dirname)(localFilePath);
++            fileOperations.push({
++                operation: "update",
++                content: "",
++                fileType: vscode.FileType.Directory,
++                filePath: parentDir,
++            });
+             fileOperations.push({
+                 operation: "update",
+                 content: script,
+@@ -612,6 +679,14 @@ function updateExistingRegistryRecord(fileOperations, record, script) {
+             if (patchedScript) {
+                 record.sha256 = (0, fsUtils_1.getFileHash)(script);
+                 record.original = Buffer.from(script).toString("base64");
++                // Ensure parent directory exists before updating the file (in case it was deleted)
++                const parentDir = (0, path_1.dirname)(localFilePath);
++                fileOperations.push({
++                    operation: "update",
++                    content: "",
++                    fileType: vscode.FileType.Directory,
++                    filePath: parentDir,
++                });
+                 fileOperations.push({
+                     operation: "update",
+                     content: patchedScript,
+@@ -723,6 +798,11 @@ function compareWithLocalFile(obj, registryRecord) {
+     return __awaiter(this, void 0, void 0, function* () {
+         const localFilePath = (0, path_1.join)(config_1.ROOT_PATH, registryRecord.path);
+         const localScript = yield (0, fsUtils_1.readFile)(localFilePath);
++        // For api_group and other objects without xanoscript, compare with generated content
++        if (!obj.xanoscript) {
++            const generatedContent = yield (0, xsUtils_1.getXanoscriptContent)(registryRecord.type, obj);
++            return generatedContent === localScript;
++        }
+         return obj.xanoscript.status === "ok" && obj.xanoscript.value === localScript;
+     });
+ }
+diff --git a/out/registry/xsUtils.js b/out/registry/xsUtils.js
+index 05ae2b4..9407bf5 100644
+--- a/out/registry/xsUtils.js
++++ b/out/registry/xsUtils.js
+@@ -14,6 +14,11 @@ const cache_1 = require("../metadata/cache");
+ const config_1 = require("../config");
+ function getXanoscriptContent(objectType, obj) {
+     return __awaiter(this, void 0, void 0, function* () {
++        // API groups don't have xanoscript content - they are just containers
++        if (!obj.xanoscript) {
++            // Generate a default xanoscript for api_group
++            return `api_group "${obj.name}" {\n}\n`;
++        }
+         if (obj.xanoscript.status === "ok") {
+             return obj.xanoscript.value;
+         }
+-- 
+2.50.1 (Apple Git-155)
+

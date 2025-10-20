@@ -1,0 +1,9 @@
+# Environment configuration (contains local paths)
+.env
+
+# Backup directories created by apply-patch.sh
+.xano-patch-backups/
+
+# Reject files from failed patches
+*.rej
+*.orig

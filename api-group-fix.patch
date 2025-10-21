@@ -1,4 +1,4 @@
-From f6589dc73633149368218cd3c3745cbc631ca306 Mon Sep 17 00:00:00 2001
+From c6b01fa4b2c09d55fcce3183504165a49d4c0d40 Mon Sep 17 00:00:00 2001
 From: Adam Krzemianowski <adam.krzemianowski@gmail.com>
 Date: Sun, 19 Oct 2025 14:03:11 +0200
 Subject: [PATCH] fix: Fix issue with missing api groups
@@ -10,25 +10,25 @@ Subject: [PATCH] fix: Fix issue with missing api groups
  3 files changed, 88 insertions(+), 1 deletion(-)
 
 diff --git a/dist/extension.js b/dist/extension.js
-index cfd6bce..f4bb6b5 100644
+index 0d11725..b05d33d 100644
 --- a/dist/extension.js
 +++ b/dist/extension.js
-@@ -2801,7 +2801,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
- `}function Ysx(t,r,n,a,s,o,f){var d;if(typeof f=="function"&&(f={callback:f}),(d=f)!==null&&d!==void 0&&d.callback){var _=f,v=_.callback;uM0(t,r,n,a,s,o,CB(CB({},f),{},{callback:function(S){S?v(K_0(S)):v()}}))}else{var m=uM0(t,r,n,a,s,o,f);return m?K_0(m):void 0}}function dM0(t,r,n,a,s,o){return Ysx(t,t,r,n,a,s,o)}function Qsx(t){var r=t.endsWith(`
+@@ -226,7 +226,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
+ `}function l5(t,e,n,r,s,a,c){var l;if(typeof c=="function"&&(c={callback:c}),(l=c)!==null&&l!==void 0&&l.callback){var f=c,p=f.callback;$1(t,e,n,r,s,a,Vi(Vi({},c),{},{callback:function(g){g?p(t_(g)):p()}}))}else{var d=$1(t,e,n,r,s,a,c);return d?t_(d):void 0}}function M1(t,e,n,r,s,a){return l5(t,t,e,n,r,s,a)}function u5(t){var e=t.endsWith(`
  `),n=t.split(`
- `).map(function(a){return a+`
--`});return r?n.pop():n.push(n.pop().slice(0,-1)),n}var V_0=class{constructor(){this.contents=new Map}updateContent(r,n){this.contents.set(r,n)}provideTextDocumentContent(r){let n=r.path;return this.contents.get(n)||""}},pe0=new V_0;var aV=Gl(require("vscode"));var EB=Gl(require("vscode"));var Q_0=require("path");var qL=Gl(require("vscode"));function Zsx(){return qL.languages.createDiagnosticCollection("customFunctions")}function W_0(t,r,n,a,s,o){let f=new qL.Range(new qL.Position(n,a),new qL.Position(n,s)),d=new qL.Diagnostic(f,o,qL.DiagnosticSeverity.Error);t.set(r,[d])}var Gz=Zsx();async function AI(t,r){if(r.xanoscript.status==="ok")return r.xanoscript.value;{let n=await Fs0(En.instanceName),a=n.startsWith("localhost")?"http":"https",s=En.workspaceId,o=`${a}://${n}/workspace/${s}-0`;return r.name?`Error retrieving: ${r.name}
-+`});return r?n.pop():n.push(n.pop().slice(0,-1)),n}var V_0=class{constructor(){this.contents=new Map}updateContent(r,n){this.contents.set(r,n)}provideTextDocumentContent(r){let n=r.path;return this.contents.get(n)||""}},pe0=new V_0;var aV=Gl(require("vscode"));var EB=Gl(require("vscode"));var Q_0=require("path");var qL=Gl(require("vscode"));function Zsx(){return qL.languages.createDiagnosticCollection("customFunctions")}function W_0(t,r,n,a,s,o){let f=new qL.Range(new qL.Position(n,a),new qL.Position(n,s)),d=new qL.Diagnostic(f,o,qL.DiagnosticSeverity.Error);t.set(r,[d])}var Gz=Zsx();async function AI(t,r){if(!r.xanoscript)return `api_group "${r.name}" {
+ `).map(function(r){return r+`
+-`});return e?n.pop():n.push(n.pop().slice(0,-1)),n}var n_=class{constructor(){this.contents=new Map}updateContent(e,n){this.contents.set(e,n)}provideTextDocumentContent(e){let n=e.path;return this.contents.get(n)||""}},Ll=new n_;var Po=we(require("vscode"));var Yi=we(require("vscode"));var u_=require("path");var ms=we(require("vscode"));function d5(){return ms.languages.createDiagnosticCollection("customFunctions")}function r_(t,e,n,r,s,a){let c=new ms.Range(new ms.Position(n,r),new ms.Position(n,s)),l=new ms.Diagnostic(c,a,ms.DiagnosticSeverity.Error);t.set(e,[l])}var ya=d5();async function zr(t,e){if(e.xanoscript.status==="ok")return e.xanoscript.value;{let n=await ef(A.instanceName),r=n.startsWith("localhost")?"http":"https",s=A.workspaceId,a=`${r}://${n}/workspace/${s}-0`;return e.name?`Error retrieving: ${e.name}
++`});return e?n.pop():n.push(n.pop().slice(0,-1)),n}var n_=class{constructor(){this.contents=new Map}updateContent(e,n){this.contents.set(e,n)}provideTextDocumentContent(e){let n=e.path;return this.contents.get(n)||""}},Ll=new n_;var Po=we(require("vscode"));var Yi=we(require("vscode"));var u_=require("path");var ms=we(require("vscode"));function d5(){return ms.languages.createDiagnosticCollection("customFunctions")}function r_(t,e,n,r,s,a){let c=new ms.Range(new ms.Position(n,r),new ms.Position(n,s)),l=new ms.Diagnostic(c,a,ms.DiagnosticSeverity.Error);t.set(e,[l])}var ya=d5();async function zr(t,e){if(!e.xanoscript)return `api_group "${e.name}" {
 +}
-+`;if(r.xanoscript.status==="ok")return r.xanoscript.value;{let n=await Fs0(En.instanceName),a=n.startsWith("localhost")?"http":"https",s=En.workspaceId,o=`${a}://${n}/workspace/${s}-0`;return r.name?`Error retrieving: ${r.name}
++`;if(e.xanoscript.status==="ok")return e.xanoscript.value;{let n=await ef(A.instanceName),r=n.startsWith("localhost")?"http":"https",s=A.workspaceId,a=`${r}://${n}/workspace/${s}-0`;return e.name?`Error retrieving: ${e.name}
  ---------------------------
- ${r.xanoscript.message}
-  ${t} ID: ${r.id}
+ ${e.xanoscript.message}
+  ${t} ID: ${e.id}
 diff --git a/out/registry/pull.js b/out/registry/pull.js
-index 4b5a579..55b1f9e 100644
+index 1db097d..b68bb1e 100644
 --- a/out/registry/pull.js
 +++ b/out/registry/pull.js
-@@ -501,6 +501,57 @@ function pull() {
+@@ -497,6 +497,57 @@ function pull() {
                          console.error(`Unknown file operation ${fileOperation.operation}`);
                  }
              }
@@ -86,7 +86,7 @@ index 4b5a579..55b1f9e 100644
              yield (0, registry_1.saveRegistry)(registry);
              changesTreeDataProvider_1.changesProvider.refresh();
          }))
-@@ -558,6 +609,14 @@ function newRegistryRecord(fileOperations, obj, objType, path) {
+@@ -553,6 +604,14 @@ function newRegistryRecord(fileOperations, obj, objType, path) {
          const localFilePath = (0, path_1.join)(config_1.ROOT_PATH, record.path);
          record.sha256 = (0, fsUtils_1.getFileHash)(yield (0, xsUtils_1.getXanoscriptContent)(objType, obj));
          record.original = Buffer.from(yield (0, xsUtils_1.getXanoscriptContent)(objType, obj)).toString("base64");
@@ -101,7 +101,7 @@ index 4b5a579..55b1f9e 100644
          fileOperations.push({
              operation: "create",
              content: yield (0, xsUtils_1.getXanoscriptContent)(objType, obj),
-@@ -597,6 +656,14 @@ function updateExistingRegistryRecord(fileOperations, record, script) {
+@@ -592,6 +651,14 @@ function updateExistingRegistryRecord(fileOperations, record, script) {
          if (record.status === types_1.XanoStatus.UNCHANGED) {
              record.sha256 = (0, fsUtils_1.getFileHash)(script);
              record.original = Buffer.from(script).toString("base64");
@@ -116,7 +116,7 @@ index 4b5a579..55b1f9e 100644
              fileOperations.push({
                  operation: "update",
                  content: script,
-@@ -612,6 +679,14 @@ function updateExistingRegistryRecord(fileOperations, record, script) {
+@@ -607,6 +674,14 @@ function updateExistingRegistryRecord(fileOperations, record, script) {
              if (patchedScript) {
                  record.sha256 = (0, fsUtils_1.getFileHash)(script);
                  record.original = Buffer.from(script).toString("base64");
@@ -131,7 +131,7 @@ index 4b5a579..55b1f9e 100644
                  fileOperations.push({
                      operation: "update",
                      content: patchedScript,
-@@ -723,6 +798,11 @@ function compareWithLocalFile(obj, registryRecord) {
+@@ -717,6 +792,11 @@ function compareWithLocalFile(obj, registryRecord) {
      return __awaiter(this, void 0, void 0, function* () {
          const localFilePath = (0, path_1.join)(config_1.ROOT_PATH, registryRecord.path);
          const localScript = yield (0, fsUtils_1.readFile)(localFilePath);
@@ -144,7 +144,7 @@ index 4b5a579..55b1f9e 100644
      });
  }
 diff --git a/out/registry/xsUtils.js b/out/registry/xsUtils.js
-index 05ae2b4..9407bf5 100644
+index 746a412..3ecb38a 100644
 --- a/out/registry/xsUtils.js
 +++ b/out/registry/xsUtils.js
 @@ -14,6 +14,11 @@ const cache_1 = require("../metadata/cache");

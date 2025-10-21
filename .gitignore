@@ -7,3 +7,4 @@
 # Reject files from failed patches
 *.rej
 *.orig
+xano70.code-workspace

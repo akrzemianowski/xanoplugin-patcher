@@ -141,7 +141,7 @@ if grep -q "Ensure parent directory exists before creating the file" "$PULL_FILE
     echo -e "${GREEN}  ✓${NC} pull.js: Already creates parent directories"
 fi
 
-if grep -q 'if(!r.xanoscript)return `api_group' "$EXTENSION_FILE" 2>/dev/null; then
+if grep -q 'if(![a-z]\.xanoscript)return `api_group' "$EXTENSION_FILE" 2>/dev/null; then
     PATCHED_EXTENSION=true
     echo -e "${GREEN}  ✓${NC} extension.js: Already has null check (minified)"
 fi
@@ -257,7 +257,7 @@ else
     echo -e "${GREEN}  ✓${NC} pull.js: Parent directory creation verified"
 fi
 
-if ! grep -q 'if(!r.xanoscript)return `api_group' "$EXTENSION_FILE" 2>/dev/null; then
+if ! grep -q 'if(![a-z]\.xanoscript)return `api_group' "$EXTENSION_FILE" 2>/dev/null; then
     if [ "$PATCHED_EXTENSION" = false ]; then
         echo -e "${RED}  ✗${NC} extension.js: Null check not applied"
         VERIFY_FAIL=true
